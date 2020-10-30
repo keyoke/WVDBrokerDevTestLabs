@@ -1,0 +1,91 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Workspace to be created."
+            }
+        },
+        "hostpoolName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Hostpool to be created."
+            }
+        },
+        "wvdRegion": {
+            "type": "String",
+            "defaultValue": "eastus",
+            "allowedValues": [
+                "centralus",
+                "eastus",
+                "eastus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
+                "westus",
+                "westus2"
+            ],
+            "metadata": {
+                "description": "The the Region where we should provision the WVD resources."
+            }
+        },
+        "utcValue":{
+            "type":"string",
+            "defaultValue": "[utcNow('u')]"
+        }
+    },
+    "variables": {
+        "hostpoolName": "[replace(parameters('hostpoolName'),'\"','')]",
+        "customRdpProperty" : "enablecredsspsupport:i:0;authentication level:i:0;",
+        "applicationGroupName": "[concat(variables('hostpoolName'),'-DAG')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DesktopVirtualization/hostpools",
+            "apiVersion": "2019-12-10-preview",
+            "name": "[variables('hostpoolName')]",
+            "location": "[parameters('wvdRegion')]",
+            "properties": {
+                "hostpoolType": "Personal",
+                "customRdpProperty": "[variables('customRdpProperty')]",
+                "personalDesktopAssignmentType": "Direct",
+                "maxSessionLimit": 999999,
+                "loadBalancerType": "Persistent",
+                "validationEnvironment": false,
+                "ring": null,
+                "registrationInfo": {
+                    "expirationTime": "[dateTimeAdd(parameters('utcValue'), 'P1Y', 'u')]",
+                    "registrationTokenOperation": "Update"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/applicationgroups",
+            "apiVersion": "2019-12-10-preview",
+            "name": "[variables('applicationGroupName')]",
+            "location": "[parameters('wvdRegion')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/hostpools/', variables('hostpoolName'))]"
+            ],
+            "properties": {
+                "hostpoolarmpath": "[resourceId('Microsoft.DesktopVirtualization/hostpools/', variables('hostpoolName'))]",
+                "applicationGroupType": "Desktop"
+            }
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces",
+            "apiVersion": "2019-12-10-preview",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('wvdRegion')]",
+            "properties": {
+                "applicationGroupReferences": [
+                    "[resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('applicationGroupName'))]"
+                    ]
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
