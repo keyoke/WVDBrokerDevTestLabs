@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
@@ -79,10 +79,11 @@
             "apiVersion": "2019-12-10-preview",
             "name": "[parameters('workspaceName')]",
             "location": "[parameters('wvdRegion')]",
+             "dependsOn": [
+                "[resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('applicationGroupName'))]"
+            ],
             "properties": {
-                "applicationGroupReferences": [
-                    "[resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('applicationGroupName'))]"
-                    ]
+                "applicationGroupReferences": "[createArray(resourceId('Microsoft.DesktopVirtualization/applicationgroups/', variables('applicationGroupName')))]"
             }
         }
     ],
