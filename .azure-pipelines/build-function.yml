@@ -15,14 +15,14 @@ steps:
       fi
       npm install 
       npm run build:production --if-present
-    workingDirectory: '$(System.DefaultWorkingDirectory)/functions/DTLEventHandler'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/src/functions/DTLEventHandler'
 - task: ArchiveFiles@2
   displayName: "Archive files"
   inputs:
-    rootFolderOrFile: "$(System.DefaultWorkingDirectory)/functions/DTLEventHandler"
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)/src/functions/DTLEventHandler"
     includeRootFolder: false
-    archiveFile: "$(System.DefaultWorkingDirectory)/functions/DTLEventHandler/build$(Build.BuildId).zip"
+    archiveFile: "$(System.DefaultWorkingDirectory)/src/functions/DTLEventHandler/build$(Build.BuildId).zip"
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/functions/DTLEventHandler/build$(Build.BuildId).zip'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/src/functions/DTLEventHandler/build$(Build.BuildId).zip'
     name: 'drop'
