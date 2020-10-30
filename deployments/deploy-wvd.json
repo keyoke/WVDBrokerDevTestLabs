@@ -56,7 +56,7 @@
                 "validationEnvironment": false,
                 "ring": null,
                 "registrationInfo": {
-                    "expirationTime": "[dateTimeAdd(parameters('utcValue'), 'P1Y', 'u')]",
+                    "expirationTime": "[dateTimeAdd(parameters('utcValue'), 'P30D', 'u')]",
                     "registrationTokenOperation": "Update"
                 }
             }
